@@ -11,6 +11,6 @@ setup(name='agml-bias-score',
       version=version,
       description='Implementation and wrapper of bias scores for NLP',
       url='https://github.com/UBI-AGML-NLP/EmbeddingBiasScores',
-      packages=['biasscore'],
+      packages=['geometrical_bias'],
       install_requires=INSTALL_REQUIRES,
       )
