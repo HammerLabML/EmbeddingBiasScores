@@ -9,7 +9,7 @@ from geometrical_bias import GeometricBias, EmbSetList, EmbSet, normalize, cossi
 class SAME(GeometricBias):
 
     def __init__(self, *args, **kwargs):
-        self.A = None
+        super().__init__(*args, **kwargs)
         self.pairs = None
 
     def attr_mean(self, attribute_set):
@@ -22,13 +22,14 @@ class SAME(GeometricBias):
         return diff
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        assert len(attribute_sets) >= 2, "need at least two attribute groups to measure bias!"
+        self.n = len(attribute_sets)
+        assert self.n >= 2, "need at least two attribute groups to measure bias!"
         self.A = attribute_sets
 
         # compute pairwise bias directions in advance
         self.pairs = [self.attr_pair_diff(attribute_sets[1], attribute_sets[0])]
 
-        for i in range(2, len(attribute_sets)):
+        for i in range(2, self.n):
             # remove correlation with previous bias directions (otherwise we might observe the same bias twice)
             # we only need bias directions of pairs (attribute_sets[i], attribute_sets[0]), because others can be
             # written as a linear combination of these
@@ -45,7 +46,7 @@ class SAME(GeometricBias):
         return cossim(target, pair_diff)
 
     def individual_bias(self, target: np.ndarray):
-        assert len(self.A) >= 2
+        assert self.n >= 2
 
         w = target / np.linalg.norm(target)  # need unit vectors!
 
@@ -63,17 +64,17 @@ class SAME(GeometricBias):
         return np.mean([self.individual_bias(target) for target in targets])
 
     def individual_bias_pairwise(self, target: np.ndarray, group1: int, group2: int):
-        assert (0 <= group1 < len(self.A) and 0 <= group2 < len(self.A) and not group1 == group2)
+        assert (0 <= group1 < self.n and 0 <= group2 < self.n and not group1 == group2)
         pair_diff = self.attr_pair_diff(self.A[group1], self.A[group2])
         return self.pair_bias(target, pair_diff)
 
     def skew_pairwise(self, targets: EmbSet, group1: int, group2: int):
-        assert (0 <= group1 < len(self.A) and 0 <= group2 < len(self.A) and not group1 == group2)
+        assert (0 <= group1 < self.n and 0 <= group2 < self.n and not group1 == group2)
         pair_diff = self.attr_pair_diff(self.A[group1], self.A[group2])
         return np.mean([self.pair_bias(w, pair_diff) for w in targets])
 
     def stereotype_pairwise(self, targets: EmbSet, group1: int, group2: int):
-        assert (0 <= group1 < len(self.A) and 0 <= group2 < len(self.A) and not group1 == group2)
+        assert (0 <= group1 < self.n and 0 <= group2 < self.n and not group1 == group2)
         pair_diff = self.attr_pair_diff(self.A[group1], self.A[group2])
         return np.std([self.pair_bias(w, pair_diff) for w in targets])
 

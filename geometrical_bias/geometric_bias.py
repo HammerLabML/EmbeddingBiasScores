@@ -18,7 +18,8 @@ def cossim(x: np.ndarray, y: np.ndarray):
 class GeometricBias:
 
     def __init__(self, *args, **kwargs):
-        self.verbose = False if 'verbose' not in kwargs else kwargs.pop('verbose')
+        self.A = None
+        self.n = 0
 
     def define_bias_space(self, attribute_sets: EmbSetList):
         pass

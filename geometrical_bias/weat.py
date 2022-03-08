@@ -43,11 +43,11 @@ def permutation_test(X, Y, A, B):
 class WEAT(GeometricBias):
 
     def __init__(self, *args, **kwargs):
-        self.A = None
+        super().__init__(*args, **kwargs)
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        assert len(attribute_sets) == 2, "WEAT needs exactly 2 attribute sets, use GeneralizedWEAT for more " \
-                                         "than 2 protected groups"
+        self.n = len(attribute_sets)
+        assert self.n == 2, "WEAT needs exactly 2 attribute sets, use GeneralizedWEAT for more than 2 protected groups"
         self.A = attribute_sets
 
     def individual_bias(self, target: np.ndarray):

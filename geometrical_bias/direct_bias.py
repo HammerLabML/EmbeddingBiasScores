@@ -28,7 +28,7 @@ def flatten(pairs):
 class DirectBias(GeometricBias):
 
     def __init__(self, *args, **kwargs):
-        self.A = None
+        super().__init__(*args, **kwargs)
         self.bias_space = None
         self.pca = None
 
@@ -39,7 +39,7 @@ class DirectBias(GeometricBias):
         self.k = 1 if 'k' not in kwargs else kwargs.pop('k')
 
     def pca_bias_subspace(self):
-        assert (len(self.A) < self.A[0].shape[0]), "the number of samples should be larger " \
+        assert (self.n < self.A[0].shape[0]), "the number of samples should be larger " \
                                                    "than the number of bias attributes"
         encoded_pairs = sub_mean(np.copy(self.A))  # use a copy of the attributes!
         flattened = flatten(encoded_pairs)
@@ -51,7 +51,8 @@ class DirectBias(GeometricBias):
         return self.pca.explained_variance_[:self.k]
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        assert len(attribute_sets) >= 2, "need at least two attribute groups to measure bias!"
+        self.n = len(attribute_sets)
+        assert self.n >= 2, "need at least two attribute groups to measure bias!"
         self.A = attribute_sets
         self.bias_space = self.pca_bias_subspace()
 

@@ -6,57 +6,51 @@ This script implements the Generalized Word Embedding Association Test (WEAT) fr
 import numpy as np
 from geometrical_bias import GeometricBias, EmbSetList, EmbSet, cossim
 
-# TODO: adapt these funcions for multiclass WEAT
-def s_wAB(w, A, B):
-    return np.mean([cossim(w, a) for a in A]) - np.mean([cossim(w, b) for b in B])
-
-
-def s_WAB(W, A, B):
-    return np.sum([s_wAB(w, A, B) for w in W])
-
-
-def s_XYAB(X, Y, A, B):
-    return s_WAB(X, A, B) - s_WAB(Y, A, B)
-
-
-def mean_s_wAB(W, A, B):
-    return np.mean([s_wAB(w, A, B) for w in W])
-
-
-def stdev_s_wAB(W, A, B):
-    return np.std([s_wAB(w, A, B) for w in W], ddof=1)
-
-
-# TODO multiclass WEAT effect size
-def effect_size(target_groups, attribute_sets):
-    print("not implemented yet")
-
-
-# TODO
-def permutation_test(target_groups, attribute_sets):
-    print("not implemented yet")
-
 
 class GeneralizedWEAT(GeometricBias):
 
     def __init__(self, *args, **kwargs):
-        self.A = None
+        super().__init__(*args, **kwargs)
+        self.mean_A = None
+        self.mean_A_i = []
+
+    def normalize_vectors(self, emb_sets: EmbSetList):
+        normalized_sets = []
+        for i in range(self.n):
+            nvecs = []
+            for emb in emb_sets[i]:
+                nvecs.append(emb / np.linalg.norm(emb))
+            normalized_sets.append(nvecs)
+        return normalized_sets
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        assert len(attribute_sets) >= 2, "need at least two attribute groups to measure bias!"
-        self.A = attribute_sets
+        self.n = len(attribute_sets)
+        assert self.n >= 2, "need at least two attribute groups to measure bias!"
+
+        # normalize all attribute vectors
+        self.A = self.normalize_vectors(attribute_sets)
+        self.mean_A_i = [np.mean(self.A[i], axis=0) for i in range(self.n)]
+        self.mean_A = np.mean(self.mean_A_i, axis=0)
 
     # TODO
     def individual_bias(self, target: np.ndarray):
-        print("not implemented yet")
+        print("individual bias not implemented for generalized WEAT")
 
     def mean_individual_bias(self, targets: EmbSet):
         print("mean bias is not implement for generalized WEAT")
         pass
 
     def group_bias(self, target_groups: EmbSetList):
-        assert len(target_groups) == len(self.A), "number of target groups must match the number of attribute sets!"
-        return effect_size(target_groups, self.A)
+        assert self.n >= 2, "need at least two attribute groups to measure bias!\ncall " \
+                            "define_bias_space(attribute_sets) with a sufficient amount of attribute sets"
+        assert len(target_groups) == self.n, "number of target groups must match the number of attribute sets!"
+
+        # normalize all vectors
+        X = self.normalize_vectors(target_groups)
+        mean_X = np.mean(np.mean(X, axis=0), axis=0)
+        bias = [np.inner(np.mean(X[i], axis=0)-mean_X, self.mean_A_i[i]-self.mean_A) for i in range(self.n)]
+        print(bias)
+        return np.sum(bias)
 
 
 

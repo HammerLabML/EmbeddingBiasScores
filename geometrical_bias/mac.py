@@ -10,10 +10,11 @@ from geometrical_bias import GeometricBias, EmbSetList, EmbSet
 class MAC(GeometricBias):
 
     def __init__(self, *args, **kwargs):
-        self.A = None
+        super().__init__(*args, **kwargs)
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        assert len(attribute_sets) >= 2, "need at least two attribute groups to measure bias!"
+        self.n = len(attribute_sets)
+        assert self.n >= 2, "need at least two attribute groups to measure bias!"
         self.A = attribute_sets
 
     def individual_bias(self, target: np.ndarray):
