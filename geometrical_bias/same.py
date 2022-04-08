@@ -39,11 +39,16 @@ class SAME(GeometricBias):
                 corr = np.dot(new_pair, pair)
                 v_corr = corr * pair
                 new_pair = new_pair - v_corr
-
             self.pairs.append(new_pair)
 
     def pair_bias(self, target, pair_diff):
         return cossim(target, pair_diff)
+
+    def signed_individual_bias(self, target: np.ndarray):
+        assert self.n == 2, "signed bias can only be obtained for exactly 2 groups"
+
+        w = target / np.linalg.norm(target)  # need unit vectors!
+        return self.pair_bias(w, self.pairs[0])
 
     def individual_bias(self, target: np.ndarray):
         assert self.n >= 2
@@ -55,10 +60,23 @@ class SAME(GeometricBias):
         if len(self.pairs) == 1:
             return bias
 
-        for i in range(1, self.pairs):
-            bias += abs(self.pair_bias(w, self.pairs[i]))
+        for i in range(1, len(self.pairs)):
+            bias += abs(self.pair_bias(w, self.pairs[i])*np.linalg.norm(self.pairs[i]))
 
         return bias
+    
+    def individual_bias_per_pair(self, target: np.ndarray):
+        assert self.n >= 2
+
+        w = target / np.linalg.norm(target)  # need unit vectors!
+        
+        biases = []
+        biases.append(self.pair_bias(w, self.pairs[0]))
+        
+        for i in range(1, len(self.pairs)):
+            biases.append(self.pair_bias(w, self.pairs[i])) #*np.linalg.norm(self.pairs[i]))
+        return biases
+        
 
     def mean_individual_bias(self, targets: EmbSet):
         return np.mean([self.individual_bias(target) for target in targets])

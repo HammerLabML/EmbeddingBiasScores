@@ -49,7 +49,6 @@ class GeneralizedWEAT(GeometricBias):
         X = self.normalize_vectors(target_groups)
         mean_X = np.mean(np.mean(X, axis=0), axis=0)
         bias = [np.inner(np.mean(X[i], axis=0)-mean_X, self.mean_A_i[i]-self.mean_A) for i in range(self.n)]
-        print(bias)
         return np.sum(bias)
 
 
