@@ -64,6 +64,9 @@ class SAME(GeometricBias):
             bias += abs(self.pair_bias(w, self.pairs[i])*np.linalg.norm(self.pairs[i]))
 
         return bias
+
+    def mean_individual_bias(self, targets: EmbSet):
+        return np.mean([self.individual_bias(target) for target in targets])
     
     def individual_bias_per_pair(self, target: np.ndarray):
         assert self.n >= 2
@@ -74,12 +77,8 @@ class SAME(GeometricBias):
         biases.append(self.pair_bias(w, self.pairs[0]))
         
         for i in range(1, len(self.pairs)):
-            biases.append(self.pair_bias(w, self.pairs[i])) #*np.linalg.norm(self.pairs[i]))
+            biases.append(self.pair_bias(w, self.pairs[i]))
         return biases
-        
-
-    def mean_individual_bias(self, targets: EmbSet):
-        return np.mean([self.individual_bias(target) for target in targets])
 
     def individual_bias_pairwise(self, target: np.ndarray, group1: int, group2: int):
         assert (0 <= group1 < self.n and 0 <= group2 < self.n and not group1 == group2)
