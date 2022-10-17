@@ -18,7 +18,7 @@ class SAME(GeometricBias):
         return center
 
     def attr_pair_diff(self, A, B):
-        diff = self.attr_mean(A) - self.attr_mean(B)
+        diff = self.attr_mean(B) - self.attr_mean(A)
         return diff
 
     def define_bias_space(self, attribute_sets: EmbSetList):

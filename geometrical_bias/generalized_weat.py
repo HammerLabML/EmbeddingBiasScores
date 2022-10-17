@@ -32,9 +32,14 @@ class GeneralizedWEAT(GeometricBias):
         self.mean_A_i = [np.mean(self.A[i], axis=0) for i in range(self.n)]
         self.mean_A = np.mean(self.mean_A_i, axis=0)
 
-    # TODO
     def individual_bias(self, target: np.ndarray):
-        print("individual bias not implemented for generalized WEAT")
+        # The paper does not define the bias of a single word. Given the associated group of a single word,
+        # one could (similarly to WEAT) compare the word vector with the "group vector" mean(A_i) - mean(A). This
+        # does not exactly match the intuition behind the Generalized WEAT as introduced in the paper, because
+        # we cannot contrast with words associated to the other groups, but is as close as we can get for one word.
+        # If we don't know the group, one could compare the word to all groups and report the maximum bias:
+        biases = [np.inner(target, self.mean_A_i[i] - self.mean_A) for i in range(self.n)]
+        return np.max(biases)
 
     def mean_individual_bias(self, targets: EmbSet):
         print("mean bias is not implement for generalized WEAT")
