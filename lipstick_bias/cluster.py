@@ -7,11 +7,12 @@ stereotype assumptions and for multiclass settings.
 """
 import numpy as np
 from geometrical_bias import EmbSetList, EmbSet
-from lipstick import BiasGroupTest
+from lipstick_bias import BiasGroupTest
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import cross_val_score
+from sklearn.utils import shuffle
 # TODO proper clustering metric for multiclass bias
+
 
 class ClusterTest(BiasGroupTest):
 
@@ -65,7 +66,7 @@ class ClusterTest(BiasGroupTest):
         pass
 
     # this implements the cluster test as introduced in the paper
-    def cluster_test(self, target_groups: EmbSetList, cv_folds=5):
+    def cluster_test(self, target_groups: EmbSetList):
         n = len(target_groups)
         assert n == 2, "need exactly two target groups!"
         X = target_groups[0]
@@ -73,6 +74,10 @@ class ClusterTest(BiasGroupTest):
         for i in range(n):
             X = np.vstack([X, target_groups[i]])
             y += [i] * len(target_groups[i])
+        self.cluster_test_with_labels(X, y)
+
+    def cluster_test_with_labels(self, X, y):
+        X, y = shuffle(X, y)
 
         kmeans = KMeans(n_clusters=2, random_state=0).fit(X)
         y_pred = kmeans.predict(X)
