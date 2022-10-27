@@ -7,7 +7,7 @@ stereotype assumptions.
 """
 import numpy as np
 from geometrical_bias import EmbSetList, EmbSet
-from lipstick import BiasGroupTest
+from lipstick_bias import BiasGroupTest
 
 
 class NeighborTest(BiasGroupTest):

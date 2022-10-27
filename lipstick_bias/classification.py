@@ -5,9 +5,10 @@ Gender Biases in Word Embeddings But do not Remove Them" by Gonen and Goldberg.
 """
 import numpy as np
 from geometrical_bias import EmbSetList, EmbSet
-from lipstick import BiasGroupTest
+from lipstick_bias import BiasGroupTest
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
+from sklearn.utils import shuffle
 
 
 class ClassificationTest(BiasGroupTest):
@@ -17,9 +18,7 @@ class ClassificationTest(BiasGroupTest):
         self.svc = None
 
     def define_bias_space(self, attribute_sets: EmbSetList):
-        super.define_bias_space(attribute_sets)
-
-        # TODO: train
+        super().define_bias_space(attribute_sets)
 
     def individual_bias(self, target: np.ndarray):
         if self.svc is None:
@@ -44,6 +43,10 @@ class ClassificationTest(BiasGroupTest):
         for i in range(n):
             X = np.vstack([X, target_groups[i]])
             y += [i] * len(target_groups[i])
+        self.classification_test_with_labels(X, y, cv_folds)
+
+    def classification_test_with_labels(self, X, y, cv_folds=5):
+        X, y = shuffle(X, y)
 
         self.svc = SVC(kernel='rbf')
         scores = cross_val_score(self.svc, X, y,  cv=cv_folds)
