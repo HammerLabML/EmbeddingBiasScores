@@ -14,7 +14,7 @@ class ClassificationTest(BiasGroupTest):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # classifier
+        self.svc = None
 
     def define_bias_space(self, attribute_sets: EmbSetList):
         super.define_bias_space(attribute_sets)
@@ -22,7 +22,7 @@ class ClassificationTest(BiasGroupTest):
         # TODO: train
 
     def individual_bias(self, target: np.ndarray):
-        if self.kmeans is None:
+        if self.svc is None:
             print("need to define the bias space first!")
             return
 
@@ -45,6 +45,6 @@ class ClassificationTest(BiasGroupTest):
             X = np.vstack([X, target_groups[i]])
             y += [i] * len(target_groups[i])
 
-        svc = SVC(kernel='rbf')
-        scores = cross_val_score(svc, X, y,  cv=cv_folds)
+        self.svc = SVC(kernel='rbf')
+        scores = cross_val_score(self.svc, X, y,  cv=cv_folds)
         return scores
