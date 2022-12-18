@@ -25,3 +25,7 @@ Papers that introduced the scores are linked.
 - [Direct Bias](https://proceedings.neurips.cc/paper/2016/file/a486cd07e4ac3d270571622f4f316ec5-Paper.pdf)
 - [RIPA](https://arxiv.org/abs/1908.06361)
 - [MAC](https://arxiv.org/abs/1904.04047)
+
+
+#### Clustering based Bias Scores
+[Clustering, Classification and Neighbor Test](https://arxiv.org/abs/1903.03862)
