@@ -65,8 +65,9 @@ class MLMBiasTester:
         #print(mask_ids2)
 
         if self.use_cuda:
-            tokens.to('cuda')
-            tokens_masked.to('cuda')
+            tokens = tokens.to('cuda')
+            tokens_masked = tokens_masked.to('cuda')
+            attention_mask = attention_mask.to('cuda')
 
         output = self.mlm(tokens_masked, attention_mask=attention_mask)
         hidden_states = output.logits
