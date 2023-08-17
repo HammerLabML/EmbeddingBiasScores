@@ -1,10 +1,8 @@
 import torch
 from transformers import AutoModelForMaskedLM, PreTrainedTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
-import difflib
-import numpy as np
 
-from typing import Tuple, List
+from typing import List
 
 
 """ This is a super class with functions to determine internal biases (in terms of token probabilities) of MLMs.
@@ -56,13 +54,6 @@ class MLMBiasTester:
         tokens_masked = batch['input_ids']
         mask_ids = batch['mask_ids']
         attention_mask = batch['attention_mask']
-
-        # determine mask token ids here
-        #mask = tokens_masked.clone()
-        #mask.apply_(is_mask)
-
-        #mask_ids2 = mask.argwhere().tolist()  # this is a list of elements [sample_id, token_id]
-        #print(mask_ids2)
 
         if self.use_cuda:
             tokens = tokens.to('cuda')
