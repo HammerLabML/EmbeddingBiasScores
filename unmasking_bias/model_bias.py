@@ -3,6 +3,7 @@ from transformers import AutoModelForMaskedLM, PreTrainedTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from typing import List
+import numpy as np
 
 
 """ This is a super class with functions to determine internal biases (in terms of token probabilities) of MLMs.
@@ -67,7 +68,7 @@ class MLMBiasTester:
         sel_token_probs = [token_prob[i][mask_ids[i]].tolist() for i in range(len(mask_ids))]
 
         target_token_ids = [tokens[i][mask_id] for i, mask_id in enumerate(mask_ids)]
-        log_probs_target = [float(sel_token_probs[i][target_token_id]) for i, target_token_id in enumerate(target_token_ids)]
+        probs_target = [float(sel_token_probs[i][target_token_id]) for i, target_token_id in enumerate(target_token_ids)]
 
         # gpu cleanup
         if self.use_cuda:
@@ -82,7 +83,7 @@ class MLMBiasTester:
 
             torch.cuda.empty_cache()
 
-        return log_probs_target
+        return probs_target
 
     def get_token_probabilities(self, dataset: MLMBiasDataset) -> List[float]:
         loader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
