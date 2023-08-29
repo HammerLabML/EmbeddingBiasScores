@@ -42,8 +42,8 @@ def get_token_diffs(tokens1: torch.Tensor, tokens2: torch.Tensor, special_token_
             unmodified1 += [x for x in range(op[1], op[2]) if seq1[x] not in special_token_list]
             unmodified2 += [x for x in range(op[3], op[4]) if seq2[x] not in special_token_list]
         else:
-            modified1 += [x for x in range(op[1], op[2])]
-            modified2 += [x for x in range(op[3], op[4])]
+            modified1 += [x for x in range(op[1], op[2]) if seq1[x] not in special_token_list]
+            modified2 += [x for x in range(op[3], op[4]) if seq2[x] not in special_token_list]
 
     return modified1, modified2, unmodified1, unmodified2
 
