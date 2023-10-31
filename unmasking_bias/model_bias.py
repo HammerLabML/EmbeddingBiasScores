@@ -86,7 +86,7 @@ class MLMBiasTester:
         return probs_target
 
     def get_token_probabilities(self, dataset: MLMBiasDataset) -> List[float]:
-        loader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
+        loader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size)
 
         res = []
         for batch_id, sample in enumerate(loader):
