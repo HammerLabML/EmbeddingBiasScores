@@ -57,7 +57,7 @@ class DirectBias(GeometricBias):
         self.bias_space = self.pca_bias_subspace()
 
     def individual_bias(self, target: np.ndarray):
-        return abs(pow(np.sum([abs(cossim(target, bias_dir)) for bias_dir in self.bias_space]), self.c))
+        return pow(np.sqrt(np.sum([pow(cossim(target, bias_dir), 2) for bias_dir in self.bias_space])), self.c)
 
     def mean_individual_bias(self, targets: EmbSet):
         return np.mean([self.individual_bias(target) for target in targets])
